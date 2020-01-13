@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import axios from "axios";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const API = "https://api.adviceslip.com/advice";
+
+class App extends Component {
+  state = {
+    reply: [],
+    isLoading: false,
+    error: null
+  };
+
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    this.getData();
+  }
+
+  getData() {
+    axios
+      .get(API)
+      .then(result => {
+        this.setState({ reply: result.data.slip.advice, isLoading: false });
+        console.log(this.state.reply);
+      })
+      .catch(error => this.setState({ error, isLoading: false }));
+  }
+  render() {
+    return (
+      <div className="main">
+        <h1>A wise woman once said:</h1>
+        <div>{this.state.error && "Error getting data!"}</div>
+        <p>{this.state.reply}</p>
+        <br />
+        <button onClick={() => this.getData()}>New quote</button>
+      </div>
+    );
+  }
 }
-
 export default App;
